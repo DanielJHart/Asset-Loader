@@ -85,7 +85,7 @@ int main(int varc, char** varg)
 	////res = ImportModelAsset("Assets/Models/Cube.fbx");
 
 	AssetFile<aiMesh> mesh1;
-	mesh1.filename = "Assets/Models/Cube.fbx";
+	mesh1.SetFile(nullptr, "Assets/Models/Cube.fbx");
 
 	AssetPool<aiMesh> assetPool;
 	int res = assetPool.AddFileToPool(mesh1);

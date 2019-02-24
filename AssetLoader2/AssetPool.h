@@ -1,23 +1,33 @@
 #pragma once
+#include <tuple>
 #include <map>
 #include <vector>
 #include <string>
 #include <functional>
 
 using namespace std;
-template<class T>
-struct AssetFile
+template<typename T>
+class AssetFile
 {
-	string filename;
-	T* acutalFile;
+public:
+	void SetFile(T* data, const string& fileName)
+	{
+		m_sFileName = fileName;
+		m_tFileData = data;
+		m_iHashsedFileName = hash<std::string>()(fileName);
+	}
 
-	bool operator== (const AssetFile<T>& rhs) 
-	{ 
-		return (hash<std::string>()(filename) == hash<std::string>()(rhs.filename));
-	};
+	int GetHashedFileName() const { return m_iHashsedFileName; } 
+	string GetFileName() const { return m_sFileName; }
+	T* GetFileData() const { return m_tFileData; }
+
+private:
+	string m_sFileName = "";
+	int m_iHashsedFileName = 0;
+	T* m_tFileData = nullptr;
 };
 
-template <class T>
+template <typename T>
 class AssetPool
 {
 public:
@@ -28,28 +38,31 @@ public:
 			return -1;
 		}
 
-		////m_mPool.insert(pair<unsigned char, int>(0, hash<std::string>()(file.filename)));
+		InsertFileIntoPool(file);
 
 		return 1;
 	}
 
-
 private:
 	bool DoesFileExistInPool(const AssetFile<T>& file)
 	{
-		bool isFileInPool = false;
-
 		for (auto const& x : m_mPool)
 		{
-			if (x.second == file)
+			if (x.second.GetHashedFileName() == file.GetHashedFileName())
 			{
-				isFileInPool = true;
-				break;
+				return true;
 			}
 		}
 
-		return isFileInPool;
+		return false;
 	}
 
+	void InsertFileIntoPool(const AssetFile<T>& file)
+	{
+		m_mPool.insert(pair<unsigned char, AssetFile<T>>(idTracker, file));
+		++idTracker;
+	}
+
+	int idTracker = 0;
 	map<unsigned char, AssetFile<T>> m_mPool;
 };
