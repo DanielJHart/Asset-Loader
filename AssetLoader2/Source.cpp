@@ -2,6 +2,7 @@
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
 #include <vector>
+#include "AssetPool.h"
 
 struct Vector3
 {
@@ -80,8 +81,15 @@ bool ImportModelAsset(const std::string& pFile)
 
 int main(int varc, char** varg)
 {
-	bool res = false;
-	res = ImportModelAsset("Assets/Models/Cube.fbx");
+	////bool res = false;
+	////res = ImportModelAsset("Assets/Models/Cube.fbx");
+
+	AssetFile<aiMesh> mesh1;
+	mesh1.filename = "Assets/Models/Cube.fbx";
+
+	AssetPool<aiMesh> assetPool;
+	int res = assetPool.AddFileToPool(mesh1);
+	res = assetPool.AddFileToPool(mesh1);
 
 	if (!res)
 	{
