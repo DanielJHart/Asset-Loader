@@ -40,6 +40,14 @@ public:
 		return res;
 	}
 
+	template <typename First, typename... Arguments>
+	int RemoveFilesFromPool(const First& first, const Arguments&... args)
+	{
+		int res = RemoveFileFromPool(first);
+		RemoveFilesFromPool(args...);
+		return res;
+	}
+
 	unsigned short GetAssetId(string filename)
 	{
 		int hashedName = hash<std::string>()(filename);
@@ -89,15 +97,34 @@ private:
 		return 1;
 	}
 
+	int RemoveFilesFromPool()
+	{
+		return 1;
+	}
+
 	int AddFileToPool(const AssetFile<T>& file)
 	{
 		if (DoesFileExistInPool(file))
 		{
-			cout << "File " << file.GetFileName() << " already exists in asset pool" << endl;
+			cout << "File " << file.GetFileName() << " already exists in asset pool." << endl;
 			return -1;
 		}
 
 		InsertFileIntoPool(file);
+
+		return 1;
+	}
+
+	int RemoveFileFromPool(int id)
+	{
+		if (!DoesIdExistInPool(id))
+		{
+			cout << "File with id: " << id << " does not exist in asset pool and so cannot be deleted." << endl;
+			return -1;
+		}
+
+		auto it = m_mPool.find(id);
+		m_mPool.erase(it);
 
 		return 1;
 	}
@@ -107,6 +134,19 @@ private:
 		for (auto const& x : m_mPool)
 		{
 			if (x.second.GetHashedFileName() == file.GetHashedFileName())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool DoesIdExistInPool(int id)
+	{
+		for (auto const& x : m_mPool)
+		{
+			if (x.first == id)
 			{
 				return true;
 			}

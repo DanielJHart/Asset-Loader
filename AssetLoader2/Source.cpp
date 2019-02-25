@@ -101,8 +101,9 @@ int main(int varc, char** varg)
 	////int id = assetPool.GetAssetId("Assets/Models/Cube.fbx");
 	////asset = assetPool.GetAssetById(id);
 
-	assetPool.AddFilesToPool(mesh1, mesh1, mesh1);
-
+	assetPool.AddFilesToPool(mesh1);
+	const unsigned short assetId = assetPool.GetAssetId(mesh1.GetFileName());
+	assetPool.RemoveFilesFromPool(assetId);
 
 	if (!res)
 	{
