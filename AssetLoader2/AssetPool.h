@@ -1,9 +1,9 @@
 #pragma once
-#include <tuple>
 #include <map>
 #include <vector>
 #include <string>
-#include <functional>
+#include <stdarg.h>
+#include <iostream>
 
 using namespace std;
 template<typename T>
@@ -31,16 +31,13 @@ template <typename T>
 class AssetPool
 {
 public:
-	int AddFileToPool(const AssetFile<T>& file)
+
+	template <typename First, typename... Arguments> 
+	int AddFilesToPool(const First& first, const Arguments&... args)
 	{
-		if (DoesFileExistInPool(file))
-		{
-			return -1;
-		}
-
-		InsertFileIntoPool(file);
-
-		return 1;
+		int res = AddFileToPool(first);
+		AddFilesToPool(args...);
+		return res;
 	}
 
 	unsigned short GetAssetId(string filename)
@@ -87,6 +84,24 @@ public:
 	}
 
 private:
+	int AddFilesToPool()
+	{
+		return 1;
+	}
+
+	int AddFileToPool(const AssetFile<T>& file)
+	{
+		if (DoesFileExistInPool(file))
+		{
+			cout << "File " << file.GetFileName() << " already exists in asset pool" << endl;
+			return -1;
+		}
+
+		InsertFileIntoPool(file);
+
+		return 1;
+	}
+
 	bool DoesFileExistInPool(const AssetFile<T>& file)
 	{
 		for (auto const& x : m_mPool)

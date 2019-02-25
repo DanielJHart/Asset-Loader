@@ -17,7 +17,7 @@ struct Mesh
 	std::vector<Vector3> vertices, normals;
 };
 
-bool ImportModelAsset(const std::string& pFile)
+bool ImportModelAsset(const std::string& pFile, Mesh* out)
 {
 	// Create an instance of the Importer class
 	Assimp::Importer importer;
@@ -39,7 +39,7 @@ bool ImportModelAsset(const std::string& pFile)
 	}
 
 	std::vector<unsigned int> indices;
-	std::vector<aiVector3D> vertices, normals;
+	std::vector<Vector3> vertices, normals;
 
 	if (scene->HasMeshes())
 	{
@@ -50,7 +50,8 @@ bool ImportModelAsset(const std::string& pFile)
 			for (int vertex = 0; vertex < mesh->mNumVertices; ++vertex)
 			{
 				vertices.push_back(mesh->mVertices[vertex]);
-				normals.push_back(mesh->mNormals[vertex]);
+				vertices.push_back(mesh->mNormals[vertex]);
+				
 			}
 
 			if (mesh->HasFaces())
@@ -76,24 +77,31 @@ bool ImportModelAsset(const std::string& pFile)
 		// Log - No mesh found in file.
 	}
 
+	out->indices = indices;
+	out->vertices = vertices;
+	out->normals = normals;
+
 	return true;
 }
 
 int main(int varc, char** varg)
 {
-	////bool res = false;
-	////res = ImportModelAsset("Assets/Models/Cube.fbx");
+	bool res = false;
+	Mesh* mesh = new Mesh();
 
-	AssetFile<aiMesh> mesh1;
-	mesh1.SetFile(nullptr, "Assets/Models/Cube.fbx");
+	AssetFile<Mesh> mesh1;
+	res = ImportModelAsset("Assets/Models/Cube.fbx", mesh);
+	mesh1.SetFile(mesh, "Assets/Models/Cube.fbx");
 
-	AssetPool<aiMesh> assetPool;
-	int res = assetPool.AddFileToPool(mesh1);
-	res = assetPool.AddFileToPool(mesh1);
+	AssetPool<Mesh> assetPool;
+	////res = assetPool.AddFileToPool(mesh1);
+	////res = assetPool.AddFileToPool(mesh1);
 
-	AssetFile<aiMesh> asset = assetPool.GetAssetByFilename("Assets/Models/Cube.fbx");
-	int id = assetPool.GetAssetId("Assets/Models/Cube.fbx");
-	asset = assetPool.GetAssetById(id);
+	////AssetFile<Mesh> asset = assetPool.GetAssetByFilename("Assets/Models/Cube.fbx");
+	////int id = assetPool.GetAssetId("Assets/Models/Cube.fbx");
+	////asset = assetPool.GetAssetById(id);
+
+	assetPool.AddFilesToPool(mesh1, mesh1, mesh1);
 
 
 	if (!res)
@@ -101,6 +109,8 @@ int main(int varc, char** varg)
 		// Log - Error importing model
 		return -1;
 	}
+
+	delete mesh;
 
 	return 0;
 }
