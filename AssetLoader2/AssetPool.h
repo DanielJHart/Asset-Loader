@@ -43,6 +43,49 @@ public:
 		return 1;
 	}
 
+	unsigned short GetAssetId(string filename)
+	{
+		int hashedName = hash<std::string>()(filename);
+
+		for (auto const& x : m_mPool)
+		{
+			if (x.second.GetHashedFileName() == hashedName)
+			{
+				return x.first;
+			}
+		}
+
+		return NULL;
+	}
+
+	AssetFile<T> GetAssetById(unsigned short id)
+	{
+		for (auto const& x : m_mPool)
+		{
+			if (x.first == id)
+			{
+				return x.second;
+			}
+		}
+
+		return AssetFile<T>();
+	}
+
+	AssetFile<T> GetAssetByFilename(string filename)
+	{
+		int hashedName = hash<std::string>()(filename);
+
+		for (auto const& x : m_mPool)
+		{
+			if (x.second.GetHashedFileName() == hashedName)
+			{
+				return x.second;
+			}
+		}
+
+		return AssetFile<T>();
+	}
+
 private:
 	bool DoesFileExistInPool(const AssetFile<T>& file)
 	{

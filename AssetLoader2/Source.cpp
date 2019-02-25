@@ -91,6 +91,11 @@ int main(int varc, char** varg)
 	int res = assetPool.AddFileToPool(mesh1);
 	res = assetPool.AddFileToPool(mesh1);
 
+	AssetFile<aiMesh> asset = assetPool.GetAssetByFilename("Assets/Models/Cube.fbx");
+	int id = assetPool.GetAssetId("Assets/Models/Cube.fbx");
+	asset = assetPool.GetAssetById(id);
+
+
 	if (!res)
 	{
 		// Log - Error importing model
